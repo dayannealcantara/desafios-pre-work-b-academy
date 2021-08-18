@@ -1,14 +1,18 @@
 const john = {
   name: 'John',
-  surname: 'Doe',
-  age: 30,
+  surname: 'Santos',
+  age: 35,
   hobbies: ['Surf', 'Design'],
 }
 
-const jane = john
+const jane = {
+  name: 'Jane',
+  surname: 'Silva',
+  age: '29',
+hobbies: ['dance'],
+}
 
-jane.name = 'Jane'
-jane.hobbies.push('MuayThai', 'Programming')
 
 console.log('John:', john)
 console.log('Jane:', jane)
+
