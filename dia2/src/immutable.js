@@ -6,10 +6,11 @@ const john = {
 }
 
 const jane = {
+  ...john,
   name: 'Jane',
   surname: 'Silva',
   age: '29',
-hobbies: ['dance'],
+  hobbies: john.hobbies.concat(['MuayThai', 'Programming']),
 }
 
 
