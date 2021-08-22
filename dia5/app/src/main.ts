@@ -120,6 +120,7 @@ function createTableRow (data: TableRowData) {
     if (element.type === 'color') {
       td = elementTypes.color(element.value)
     }
+
     if (td) {
     tr.appendChild(td)
     }
