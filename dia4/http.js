@@ -14,4 +14,3 @@ const createOptions = (method, data) => ({
  export const get = (url) => request(url)
  export const post = (url, data) => request(url, createOptions('POST', data))
  export const del = (url, data) => request(url, createOptions('DELETE', data))
- 
