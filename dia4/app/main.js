@@ -1,14 +1,11 @@
 import './style.css'
-
-import{get, post, del} from './http'
-
+import { get, post, del } from './http'
 
 const url = 'http://localhost:3333/cars'
 const form = document.querySelector('[data-js="cars-form"]')
-const table =  document.querySelector('[data-js="table"]')
+const table = document.querySelector('[data-js="table"]')
 
-const getFormElemenet = ( event ) => (elementName) => {
-  console.log(event.target.elements[elementName])
+const getFormElement = (event) => (elementName) => {
   return event.target.elements[elementName]
 }
 
@@ -18,10 +15,11 @@ const elementTypes = {
   color: createColor,
 }
 
-function createImage (value) {
+function createImage (data) {
   const td = document.createElement('td')
   const img = document.createElement('img')
-  img.src = value
+  img.src = data.src
+  img.alt = data.alt
   img.width = 100
   td.appendChild(img)
   return td
@@ -39,20 +37,20 @@ function createColor (value) {
   div.style.width = '100px'
   div.style.height = '100px'
   div.style.background = value
-  td.appendChild(color)
+  td.appendChild(div)
   return td
 }
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault()
-  const getElement = getFormElemenet(e)
+  const getElement = getFormElement(e)
 
   const data = {
-    image: getElement('image').value ,
-    brandModel: getElement('brand-model').value ,
-    year: getElement('year').value ,
-    color: getElement('color').value ,
+    image: getElement('image').value,
+    brandModel: getElement('brand-model').value,
+    year: getElement('year').value,
     plate: getElement('plate').value,
+    color: getElement('color').value,
   }
 
   const result = await post(url, data)
@@ -64,23 +62,22 @@ form.addEventListener('submit', async (e) => {
 
   const noContent = document.querySelector('[data-js="no-content"]')
   if (noContent) {
-  table.removeChild(noContent)
+    table.removeChild(noContent)
   }
 
   createTableRow(data)
-
 
   e.target.reset()
   image.focus()
 })
 
 function createTableRow (data) {
-   const elements = [
-    { type: 'image', value: data.image },
+  const elements = [
+    { type: 'image', value: { src: data.image, alt: data.brandModel } },
     { type: 'text', value: data.brandModel },
     { type: 'text', value: data.year },
-    { type: 'color', value: data.color },
     { type: 'text', value: data.plate },
+    { type: 'color', value: data.color }
   ]
 
   const tr = document.createElement('tr')
@@ -96,6 +93,7 @@ function createTableRow (data) {
   button.dataset.plate = data.plate
 
   button.addEventListener('click', handleDelete)
+
   tr.appendChild(button)
 
   table.appendChild(tr)
@@ -103,17 +101,23 @@ function createTableRow (data) {
 
 async function handleDelete (e) {
   const button = e.target
-  const plate = button.target.dataset.plate
+  const plate = button.dataset.plate
 
-const result = await del(url, { plate })
-if (result.error) {
-  console.log('erro ao deletar', result.message)
-  return
-}
+  const result = await del(url, { plate })
 
-const tr = document.querySelector(`tr[data-plate="${plate}"]`)
+  if (result.error) {
+    console.log('erro ao deletar', result.message)
+    return
+  }
+
+  const tr = document.querySelector(`tr[data-plate="${plate}"]`)
   table.removeChild(tr)
   button.removeEventListener('click', handleDelete)
+
+  const allTrs = table.querySelector('tr')
+  if (!allTrs) {
+    createNoCarRow()
+  }
 }
 
 function createNoCarRow () {
@@ -128,20 +132,20 @@ function createNoCarRow () {
   table.appendChild(tr)
 }
 
-   async function main () {
-    const result = await get(url)
+async function main () {
+  const result = await get(url)
 
-      if (result.error) {
-        console.log('Erro ao buscar carros', result.message)
-        return
-   }
-      if (result.lenght === 0) {
-        createNoCarRow()
-        return
-      }
+  if (result.error) {
+    console.log('Erro ao buscar carros', result.message)
+    return
+  }
 
- result.forEach(createTableRow)
+  if (result.length === 0) {
+    createNoCarRow()
+    return
+  }
 
+  result.forEach(createTableRow)
 }
 
- main()
+main()
